@@ -61,7 +61,8 @@ def upper_than(raw,name_channel,threshold):
         eeg2=data[i:i+win2]       #Every 2 seconds
         eeg1=data[i:i+win1]       #Every second
         eeg05=data[i:i+win05]     #Every half second
-    
+        
+
         aux2=abs(max(data[i:i+win2])-min(data[i:i+win2]))
         aux1=abs(max(data[i:i+win1] )-min(data[i:i+win1] ))
         aux05=abs(max(data[i:i+win05])-min(data[i:i+win05]))
@@ -173,7 +174,7 @@ def subtraction_emg(raw):
     return sub_emg
 
 ##Re-estructure data
-def re_esctructure(raw, annot='no'):
+def re_esctructure(raw, annot='yes'):
     data,sfreq =raw.get_data(),raw.info['sfreq']  
     time_shape = data.shape[1]
     
@@ -188,15 +189,24 @@ def re_esctructure(raw, annot='no'):
 
     new_data=data.copy()
     new_data[0]= sub_eog
-    new_data[1]= sub_emg
-    new_data[2]= pulse(time_shape,sfreq)
-    new_data[3]= c3_1
-    new_data[4]= c4_1    
-    new_data[5]= upper_new(raw,'C4_1',75,sfreq)  
-    new_data=new_data[[0,1,2,3,4,5], :]
+    new_data[1]= yasa_filter(c4_1,sfreq)
+    new_data[2]= c4_1
+    new_data[3]= pulse(time_shape,sfreq)
+    new_data[4]= sub_emg     
+    new_data=new_data[[0,1,2,3,4], :]
 
-    new_ch_names = ['EOG', 'EMG', 'Pulse', 'C3', 'C4_1','Supera 75']  
-    new_chtypes = ['eog'] + ['emg']+ ['misc'] + 2 *['eeg'] + ['stim'] # Recompongo los canales.
+    # new_data[0]= sub_eog
+    # new_data[1]= sub_emg
+    # new_data[2]= pulse(time_shape,sfreq)
+    # new_data[3]= c3_1
+    # new_data[4]= c4_1    
+    # new_data[5]= upper_new(raw,'C4_1',75,sfreq)  
+    # new_data=new_data[[0,1,2,3,4,5], :]
+
+    new_ch_names= ['EOG_1-EOG_2','Filter YASA','C4_1','Grid','EMG_1-EMG_2']
+    new_chtypes = ['eog'] + 2 *['eeg'] + ['emg']+ ['misc']  # Recompongo los canales.
+    #new_ch_names = ['EOG', 'EMG', 'Pulse', 'C3', 'C4_1','Supera 75']  
+    #new_chtypes = ['eog'] + ['emg']+ ['misc'] + 2 *['eeg'] + ['stim'] # Recompongo los canales.
     
     # Initialize an info structure      
     new_info = mne.create_info(new_ch_names, sfreq=sfreq, ch_types=new_chtypes)
@@ -205,6 +215,7 @@ def re_esctructure(raw, annot='no'):
     new_raw=mne.io.RawArray(new_data, new_info)        # Build a new raw object 
     new_raw.set_annotations(raw.annotations)         
     
+   
     if (annot=='yes'):
         original_annot=raw.annotations 
         new_raw.set_annotations(raw.annotations+original_annot) 
@@ -290,26 +301,31 @@ def plot(raw,n_channels,scal,order,subject):
 
 #Main function
 def main():  # Wrapper function
-    messagebox.showinfo(message="This program allows you to tag a specific event.", title="Info")
+    #messagebox.showinfo(message="This program allows you to tag a specific event.", title="Info")
     #Select the path file
     path = easygui.fileopenbox(title='Select RAW file (vdhr or fif).')
 
     #This line is if you want to ask, if not default is 'no'
-    stim_annot = messagebox.askquestion(message=" Do you want to see the original tags? (Stimulus)", title="Anotaciones")  
-    
-    raw=load_brainvision(path, annot=stim_annot) 
+    #stim_annot = messagebox.askquestion(message=" Do you want to see the original tags? (Stimulus)", title="Anotaciones")  
+    #raw=load_brainvision(path, annot=stim_annot) 
+    raw=load_brainvision(path) 
     path_states = easygui.fileopenbox(title='Select the hypnogram (file with extension txt).') #selecciono el txt de anotaciones anteriores
-    raw,hypno_annot= set_sleep_stages(raw,path_states,annot=stim_annot)      
-
-    defa = messagebox.askquestion(message=" See default", title="Default")
-    if defa=='yes':
-        raw=re_esctructure(raw, annot=stim_annot)
+    #raw,hypno_annot= set_sleep_stages(raw,path_states)  
+        
+    raw,hypno_annot= set_sleep_stages(raw,path_states)  
+    #raw,hypno_annot= set_sleep_stages(raw,path_states,annot=stim_annot)     
+    
+    #defa = messagebox.askquestion(message=" See default", title="Default")
+    #if defa=='yes':
+        #raw=re_esctructure(raw, annot=stim_annot)
+    raw=re_esctructure(raw)
 
     messagebox.askokcancelmessage=(" Was a scoring done previously with this data?")
     anotaciones = messagebox.askquestion(message=" Was a scoring done previously with this data?", title="Anotaciones")
     if (anotaciones == 'yes'):
         sw_path = easygui.fileopenbox(title='Select txt file with ANNOTATIONS.')#selecciono la carpeta vhdr
-        _,sw_annot=set_event_annot(raw,sw_path, annot=stim_annot)
+        _,sw_annot=set_event_annot(raw,sw_path)
+        #_,sw_annot=set_event_annot(raw,sw_path, annot=stim_annot)
         my_annot=sw_annot+hypno_annot
         raw = raw.set_annotations(my_annot)
 
@@ -329,8 +345,8 @@ def main():  # Wrapper function
         _, MIMIR_annot=MIMIR_detection(raw)
         my_annot=raw.annotations   
         _,new_MIMIR_annot=delete_stage(raw,hypno_annot,0,MIMIR_annot)
-
         my_annot=my_annot+new_MIMIR_annot
+        #my_annot=my_annot+MIMIR_annot
         raw = raw.set_annotations(my_annot)
     name,subject=file_name(path)
 
@@ -339,18 +355,20 @@ def main():  # Wrapper function
     #For actual EEG/EOG/EMG/STIM data different scaling factors should be used.
     scal = dict(eeg=20e-5, eog=150e-5,emg=15e-4, misc=1e-3, stim=15)
 
-    if defa=='yes':
-        n_channels=6
-        order=[0,3,2,4,1,5]
-        plot(raw,n_channels,scal,order,subject)
+    #if defa=='yes':
+    n_channels=5
+    order=[0,1,2,3,4]
+    plot(raw,n_channels,scal,order,subject)
+        #raw.annotations.save(name + ".txt")
+        #print('Scoring was completed and the data was saved.')
 
-    elif defa=='no':
-        ##Chose what you want!
-        channels_names=['C3_1','C4_1','Filter YASA','P4_1']
-        raw_plot=select_channels(raw,channels_names)#,annot='no')
-        n_channels=len(channels_names)
-        order=[i for i in range(n_channels)]
-        plot(raw_plot,n_channels,scal,order,subject)
+    # elif defa=='no':
+    #     ##Chose what you want!
+    #     channels_names=['C3_1','C4_1','Filter YASA','P4_1']
+    #     raw_plot=select_channels(raw,channels_names)#,annot='no')
+    #     n_channels=len(channels_names)
+    #     order=[i for i in range(n_channels)]
+    #     plot(raw_plot,n_channels,scal,order,subject)
 
     #Save the tagged data
     anotaciones = messagebox.askquestion(message=" Do you want to save the annotations?", title="Saving")

@@ -343,7 +343,7 @@ def findpeaks_MIMIR(data):
 def MIMIR_detection(raw):
     data,sfreq =raw.get_data(),raw.info['sfreq']                   
     time_shape = data.shape[1]
-    print('timw shapeì',time_shape)
+    #print('time shape:',time_shape)
     c4_1= raw.get_data(picks='C4_1')* 1e6   
     c4_1=c4_1.ravel()
     c4= Massimini2004_filter(c4_1,200) 
@@ -353,7 +353,7 @@ def MIMIR_detection(raw):
     onset = np.asarray(swstart)
     onset=onset/200
     duration=np.asarray(swdur)/200
-    description=np.asarray(['M']*(len(swdur)))
+    description=np.asarray(['S0']*(len(swdur)))
 
     onset= onset.astype(np.float)
     duration=np.asarray(duration)

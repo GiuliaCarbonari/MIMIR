@@ -34,10 +34,10 @@ def load_brainvision(path,annot = 'no'):
     If you want to see the original RAW labels. For ex, stimulus.
     By default they are not displayed
     """
-    if (annot == 'no'):
-        raw.set_annotations(None)   
-    elif (annot=='yes'):
-        raw.set_annotations(raw.annotations)    
+    if (annot == 'yes'):
+        raw.set_annotations(raw.annotations)     
+    #elif (annot=='no'):
+    #    raw.set_annotations(None) 
     
     print('')
     print('Done!')
@@ -116,49 +116,9 @@ def choose_window(data,sf=200,start=0,dur=5):
     return data,time
 
 
+#def set_hypno_annot(raw,hypno_path,annot = 'no'):
 def set_sleep_stages(raw,hypno_path,annot = 'no'):
-    """ 
-    Set Hypnpgram annotations
-    Read raw + hypno (txt file) and Return raw, annot (onset, duration, description) 
-    """  
-    hypno_text = loadtxt(hypno_path)
-    hypno= hypno_text[:,0]
-    n=len(hypno)*30
 
-    index=np.where(np.roll(hypno,1)!=hypno)[0]
-    description=[]
-    for i in index:
-        v=hypno[i]
-        if v==0:
-            description.append('Wake')
-        elif v==1:
-            description.append('S1')
-        elif v==2:
-            description.append('S2')
-        elif v==3:
-            description.append('S3')
-        elif v==4:
-            description.append('S4')
-        elif v==5:
-            description.append('REM')
-        elif v==8:
-            description.append('Movement')
-
-    onset=np.where(np.roll(hypno,1)!=hypno)[0]*30
-    duration=np.diff(np.append(onset,n))
-
-    hypno_annot = mne.Annotations(onset,duration,description, orig_time=raw.annotations.orig_time) 
-
-    if (annot == 'no'):   
-        reraw = raw.copy().set_annotations(hypno_annot)
-    elif (annot=='yes'):
-        original_annot=raw.annotations  
-        reraw = raw.copy().set_annotations(hypno_annot+original_annot)
-
-    return reraw, hypno_annot
-
-
-def set_hypno_annot(raw,hypno_path,annot = 'no'):
     """ 
     Set Hypnpgram annotations
     Read raw + hypno (txt file) and Return raw, annot (onset, duration, description) 
@@ -181,23 +141,31 @@ def set_hypno_annot(raw,hypno_path,annot = 'no'):
     cont=1
     summary_hypno=np.zeros([n,1])
     duration=[]
-    description=['Despierto']
+    #description=['Despierto']
+    description=['Wake']
     for i in range(n-1):
         if hypno[i] != hypno[i+1]:
             if hypno[i+1]==0:
-                description.append('Despierto')
+                #description.append('Despierto')
+                description.append('Wake')
             elif hypno[i+1]==1:
-                description.append('Fase 1')
+                #description.append('Fase 1')
+                description.append('S1')
             elif hypno[i+1]==2:
-                description.append('Fase 2')
+                #description.append('Fase 2')
+                description.append('S2')
             elif hypno[i+1]==3:
-                description.append('Fase 3')
+                #description.append('Fase 3')
+                description.append('S3')
             elif hypno[i+1]==4:
-                description.append('Fase 4')
+                #description.append('Fase 4')
+                description.append('S4')
             elif hypno[i+1]==5:
-                description.append('Fase 5')
+                #description.append('Fase 5')
+                description.append('S5')
             elif hypno[i+1]==8:
-                description.append('Movimiento')
+                #description.append('Movimiento')
+                description.append('Movement')
             summary_hypno[cont,0]=(i+1)
             cont=cont+1
     summary_hypno=summary_hypno[:cont]
