@@ -180,7 +180,7 @@ def set_sleep_stages(raw,hypno_path,annot = 'no'):
     return reraw, hypno_annot
     
 
-def set_event_annot(raw,path, annot='no'):
+def set_event_annot(raw,path, annot='yes'):
     """ 
     Read hypno(txt file) and raw (vhdr-fif file) and Return (start, duration, description, end) 
     Return hypnogram plus scoring 
@@ -209,14 +209,22 @@ def set_event_annot(raw,path, annot='no'):
                 description.append(row[2])
                 end.append(aux)
 
-          if row[2]=='M' or row[2]==None:
+          if row[2] in ['M','Wake','S1','S2','S3','S4','S5','Movement']or row[2]==None:
                 aux=row[0]+row[1]           
                 start.append(row[0])
                 duration.append(row[1])
                 description.append(row[2])
                 end.append(aux)
 
-          if row[2]=='KC' or row[2]=='kc' or row[2]==None:
+          if row[2] in ['SO','Wake','S1','S2','S3','S4','S5','Movement']or row[2]==None:
+                aux=row[0]+row[1]           
+                start.append(row[0])
+                duration.append(row[1])
+                description.append(row[2])
+                end.append(aux)
+
+
+          if row[2] in ['KC','kc','Wake','S1','S2','S3','S4','S5','Movement'] or row[2]==None:
                 aux=row[0]+row[1]           
                 start.append(row[0])
                 duration.append(row[1])

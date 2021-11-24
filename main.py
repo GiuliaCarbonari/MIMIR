@@ -218,7 +218,7 @@ def re_esctructure(raw, annot='yes'):
    
     if (annot=='yes'):
         original_annot=raw.annotations 
-        new_raw.set_annotations(raw.annotations+original_annot) 
+        new_raw.set_annotations(new_raw.annotations+original_annot) 
 
     return new_raw
 
@@ -280,7 +280,7 @@ def select_channels(raw,channels_names,annot='no'):
         pass
     elif (annot=='yes'):
         original_annot=raw.annotations 
-        raw_plot.set_annotations(raw.annotations+original_annot) 
+        raw_plot.set_annotations(raw_plot.annotations+original_annot) 
     return raw_plot
 
 
@@ -320,18 +320,6 @@ def main():  # Wrapper function
         #raw=re_esctructure(raw, annot=stim_annot)
     raw=re_esctructure(raw)
 
-    messagebox.askokcancelmessage=(" Was a scoring done previously with this data?")
-    anotaciones = messagebox.askquestion(message=" Was a scoring done previously with this data?", title="Anotaciones")
-    if (anotaciones == 'yes'):
-        sw_path = easygui.fileopenbox(title='Select txt file with ANNOTATIONS.')#selecciono la carpeta vhdr
-        _,sw_annot=set_event_annot(raw,sw_path)
-        #_,sw_annot=set_event_annot(raw,sw_path, annot=stim_annot)
-        my_annot=sw_annot+hypno_annot
-        raw = raw.set_annotations(my_annot)
-
-    #If yoy want to see information of the raw file
-    #show_info(raw)
-    
 
     anotaciones2 = messagebox.askquestion(message=" Do you want to see the YASA DETECTION tags? ", title="Anotaciones")
     if (anotaciones2 == 'yes'):
@@ -348,6 +336,22 @@ def main():  # Wrapper function
         my_annot=my_annot+new_MIMIR_annot
         #my_annot=my_annot+MIMIR_annot
         raw = raw.set_annotations(my_annot)
+   
+
+    anotaciones = messagebox.askquestion(message=" Was a scoring done previously with this data?", title="Anotaciones")
+    if (anotaciones == 'yes'):
+        sw_path = easygui.fileopenbox(title='Select txt file with ANNOTATIONS.')#selecciono la carpeta vhdr
+        _,sw_annot=set_event_annot(raw,sw_path)
+        #_,sw_annot=set_event_annot(raw,sw_path, annot=stim_annot)
+        my_annot=sw_annot+hypno_annot
+        raw = raw.set_annotations(my_annot)
+
+    #If yoy want to see information of the raw file
+    #show_info(raw)
+    
+
+    my_annot=raw.annotations 
+    raw = raw.set_annotations(my_annot)
     name,subject=file_name(path)
 
     

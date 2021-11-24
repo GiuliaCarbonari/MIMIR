@@ -353,7 +353,7 @@ def MIMIR_detection(raw):
     onset = np.asarray(swstart)
     onset=onset/200
     duration=np.asarray(swdur)/200
-    description=np.asarray(['S0']*(len(swdur)))
+    description=np.asarray(['SO']*(len(swdur)))
 
     onset= onset.astype(np.float)
     duration=np.asarray(duration)
