@@ -6,7 +6,9 @@ Media to invigorate Memory in non-REM sleep
 </p>
 
 #How to use me
+
 '''bash
+
  git clone https://github.com/GiuliaCarbonari/MIMIR
 
  conda env update --name detection --file detection.yml
