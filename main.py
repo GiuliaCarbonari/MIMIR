@@ -303,13 +303,15 @@ def plot(raw,n_channels,scal,order,subject):
 def main():  # Wrapper function
     #messagebox.showinfo(message="This program allows you to tag a specific event.", title="Info")
     #Select the path file
-    path = easygui.fileopenbox(title='Select RAW file (vdhr or fif).')
+    #path = easygui.fileopenbox(title='Select RAW file (vhdr or fif).')
+
+    path = easygui.fileopenbox(filetypes = ['*.vhdr'], title='Select RAW file (vdhr or fif).')
 
     #This line is if you want to ask, if not default is 'no'
     #stim_annot = messagebox.askquestion(message=" Do you want to see the original tags? (Stimulus)", title="Anotaciones")  
     #raw=load_brainvision(path, annot=stim_annot) 
     raw=load_brainvision(path) 
-    path_states = easygui.fileopenbox(title='Select the hypnogram (file with extension txt).') #selecciono el txt de anotaciones anteriores
+    path_states = easygui.fileopenbox(filetypes = ['*.txt'],title='Select the hypnogram (file with extension txt).') #selecciono el txt de anotaciones anteriores
     #raw,hypno_annot= set_sleep_stages(raw,path_states)  
         
     raw,hypno_annot= set_sleep_stages(raw,path_states)  
@@ -340,7 +342,7 @@ def main():  # Wrapper function
 
     anotaciones = messagebox.askquestion(message=" Was a scoring done previously with this data?", title="Anotaciones")
     if (anotaciones == 'yes'):
-        sw_path = easygui.fileopenbox(title='Select txt file with ANNOTATIONS.')#selecciono la carpeta vhdr
+        sw_path = easygui.fileopenbox(filetypes = ['*.txt'],title='Select txt file with ANNOTATIONS.')#selecciono la carpeta vhdr
         _,sw_annot=set_event_annot(raw,sw_path)
         #_,sw_annot=set_event_annot(raw,sw_path, annot=stim_annot)
         my_annot=sw_annot+hypno_annot
