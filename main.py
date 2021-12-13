@@ -379,7 +379,7 @@ def main():  # Wrapper function
     #Save the tagged data
     anotaciones = messagebox.askquestion(message=" Do you want to save the annotations?", title="Saving")
     if (anotaciones == 'yes'):
-        raw.annotations.save(name + ".txt")
+        raw.annotations.save(path.rsplit('\\', 1)[0]+'\\'+ name + ".txt")
         print('Scoring was completed and the data was saved.')
     else:
         print('The data was not saved.')
