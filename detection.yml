@@ -78,11 +78,7 @@ dependencies:
   - theano=1.0.5=py36he2d232f_1
   - tk=8.6.8=hfa6e2cd_0
   - typing_extensions=3.7.4.3=py_0
-  - vc=14.1=h0510ff6_4
   - vectormath=0.2.2=py_0
-  - vs2015_runtime=14.16.27012=hf0eaf9b_1
-  - vs2017_win-64=19.16.27038=h2e3bad8_2
-  - vswhere=2.8.4=h57928b3_0
   - vtk=8.2.0=py36h1e53df8_200
   - werkzeug=1.0.1=pyh9f0ad1d_0
   - wheel=0.34.2=py36_0
@@ -116,5 +112,4 @@ dependencies:
     - visbrain==0.4.5
     - vispy==0.6.4
     - yasa==0.3.0
-prefix: C:\Users\Nicola\.conda\envs\detection
 
