@@ -25,6 +25,18 @@ def load_brainvision(path,annot = 'no'):
             eog=('EOG1_1','EOG2_1'),
             misc=('EMG1_1','EMG2_1'),
             verbose=True)
+
+            rename_map = {
+                "EOG I": "EOG1",
+                "EOG D": "EOG2",
+                "EMG I": "EMG1",
+                "EMG D": "EMG2",
+            }
+            rename_map = {k: v for k, v in rename_map.items() if k in raw.ch_names}
+            raw.rename_channels(rename_map)
+            raw.rename_channels(lambda s: s if s.endswith("_1") else f"{s}_1")
+
+        
             # Specify this as the emg channel (channel type)
             raw.set_channel_types({'EMG1_1': 'emg','EMG2_1': 'emg'}) 
     # Strip channel names of "." characters
